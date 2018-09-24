@@ -33,9 +33,9 @@ public class PlayerMovement : MonoBehaviour
     {
         movement.Set(h, 0f, v); //used to set movement
 
-        movement = movement.normalized * speed * Time.deltaTime;  //prevents speed increae when moving diagonally
+        movement = movement.normalized * speed * Time.deltaTime;  //prevents speed increase when moving diagonally
 
-        playerRb.MovePosition(transform.position + movement);  //applies movemen to player character
+        playerRb.MovePosition(transform.position + movement);  //applies movement to player character
     }
 
     private void PlayerTurningControls()

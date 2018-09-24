@@ -2,48 +2,60 @@
 
 public class PlayerShooting : MonoBehaviour
 {
-    public int damagePerShot = 20;
-    public float timeBetweenBullets = 0.15f;
-    public float range = 100f;
+    public int damagePerShot = 20;  //bullet damage
+    public float timeBetweenBullets = 0.15f;  //shooting time / attackspeed
+    public float timeBetweenSecondaryBullets = 1f;
+    public float range = 100f;  //effective range
 
+    public GameObject grenadeBulletPrefab;
 
-    float timer;
-    Ray shootRay = new Ray();
-    RaycastHit shootHit;
-    int shootableMask;
-    ParticleSystem gunParticles;
-    LineRenderer gunLine;
-    AudioSource gunAudio;
-    Light gunLight;
-    float effectsDisplayTime = 0.2f;
+    Ray shootRay = new Ray();  //raycast to find out what we hit
+    RaycastHit shootHit;  //used to return what we hit
+    ParticleSystem gunParticles;  //gunparticles
+    LineRenderer gunLine;  //line for raycast
+    AudioSource gunAudio;  //sound
+    Light gunLight;  //bullet lights
+
+    float timer;  //keey everythingin sync
+    float secondaryBulletTimer;
+    float effectsDisplayTime = 0.2f;  //life time of particles/effects
+    int shootableMask;  //only click on the floor
 
 
     void Awake ()
     {
-        shootableMask = LayerMask.GetMask ("Shootable");
-        gunParticles = GetComponent<ParticleSystem> ();
-        gunLine = GetComponent <LineRenderer> ();
-        gunAudio = GetComponent<AudioSource> ();
-        gunLight = GetComponent<Light> ();
+
+        //gets components
+        shootableMask = LayerMask.GetMask ("Shootable");  //uses masks to find out which objects were marked shootable
+        gunParticles = GetComponent<ParticleSystem> ();  //gets particles
+        gunLine = GetComponent <LineRenderer> ();  //gets linerenderer
+        gunAudio = GetComponent<AudioSource> ();  //gets audio
+        gunLight = GetComponent<Light> ();  //gets light
     }
 
 
     void Update ()
     {
-        timer += Time.deltaTime;
+        timer += Time.deltaTime;  //timer used for processes and control attack speed
+        secondaryBulletTimer += Time.deltaTime;
 
-		if(Input.GetButton ("Fire1") && timer >= timeBetweenBullets && Time.timeScale != 0)
+		if(Input.GetButton ("Fire1") && timer >= timeBetweenBullets && Time.timeScale != 0)  //uses mouse left click to shoot
         {
             Shoot ();
         }
 
-        if(timer >= timeBetweenBullets * effectsDisplayTime)
+        if (Input.GetButton("Fire2") && secondaryBulletTimer >= timeBetweenSecondaryBullets && Time.timeScale != 0)  //uses mouse left click to shoot
+        {
+            ShootSecondaryRound();
+        }
+
+        if (timer >= timeBetweenBullets * effectsDisplayTime)  //used to disaable effects
         {
             DisableEffects ();
         }
     }
 
-
+    //disables effects
     public void DisableEffects ()
     {
         gunLine.enabled = false;
@@ -53,25 +65,29 @@ public class PlayerShooting : MonoBehaviour
 
     void Shoot ()
     {
-        timer = 0f;
+        timer = 0f;  //resets timer
 
-        gunAudio.Play ();
+        gunAudio.Play ();  //plays audio
 
-        gunLight.enabled = true;
+        gunLight.enabled = true;  //turns on light
 
+        //if particles are playing stop em and then start em
         gunParticles.Stop ();
         gunParticles.Play ();
 
+        //turn on line renderer
         gunLine.enabled = true;
-        gunLine.SetPosition (0, transform.position);
+        gunLine.SetPosition (0, transform.position);  //access line positions
 
-        shootRay.origin = transform.position;
-        shootRay.direction = transform.forward;
+        //raycasting
+        shootRay.origin = transform.position;  //starting position
+        shootRay.direction = transform.forward;  //moves forward
 
-        if(Physics.Raycast (shootRay, out shootHit, range, shootableMask))
+        if(Physics.Raycast (shootRay, out shootHit, range, shootableMask))  //uses physics to raycast out, (variable, what was hit, specified range, only hit  shootablemask)
         {
-            EnemyHealth enemyHealth = shootHit.collider.GetComponent <EnemyHealth> ();
-            if(enemyHealth != null)
+            EnemyHealth enemyHealth = shootHit.collider.GetComponent <EnemyHealth> ();  //whatever is hit, give me the enemyhealth script and store it here
+
+            if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage (damagePerShot, shootHit.point);
             }
@@ -81,5 +97,11 @@ public class PlayerShooting : MonoBehaviour
         {
             gunLine.SetPosition (1, shootRay.origin + shootRay.direction * range);
         }
+    }
+    
+    void ShootSecondaryRound()
+    {
+        secondaryBulletTimer = 0f;
+        Instantiate(grenadeBulletPrefab, transform.position, transform.rotation);       
     }
 }

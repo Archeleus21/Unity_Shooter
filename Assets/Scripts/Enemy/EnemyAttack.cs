@@ -4,13 +4,13 @@ using System.Collections;
 public class EnemyAttack : MonoBehaviour
 {
     public float timeBetweenAttacks = 0.5f;  //controls enemy attack speed
-    public float attackDamage = 10f;  //controls enemy da
+    public int attackDamage = 10;  //controls enemy da
 
 
     Animator anim;  //reference to animation
     GameObject player;  //reference to player
     PlayerHealth playerHealth;  //reference to player health script
-    //EnemyHealth enemyHealth;
+    EnemyHealth enemyHealth;  //reference enemy health script
     bool playerInRange;  //is player in range?
     float timer;  //used to keep everything in sync
 
@@ -20,7 +20,7 @@ public class EnemyAttack : MonoBehaviour
         //gets components and references
         player = GameObject.FindGameObjectWithTag ("Player");  //do once in awake to store and never use again, help improve performance
         playerHealth = player.GetComponent <PlayerHealth> (); 
-        //enemyHealth = GetComponent<EnemyHealth>();
+        enemyHealth = GetComponent<EnemyHealth>();
         anim = GetComponent <Animator> ();
     }
 
@@ -47,7 +47,7 @@ public class EnemyAttack : MonoBehaviour
     {
         timer += Time.deltaTime;  //adds to timer
 
-        if(timer >= timeBetweenAttacks && playerInRange/* && enemyHealth.currentHealth > 0*/)  //checks if attacking is within the attack speed that was given
+        if(timer >= timeBetweenAttacks && playerInRange && enemyHealth.currentHealth > 0)  //checks if attacking is within the attack speed that was given
         {
             Attack ();
         }
@@ -56,6 +56,7 @@ public class EnemyAttack : MonoBehaviour
         {
             anim.SetTrigger ("PlayerDead");  //player dead animation
         }
+
     }
 
 
