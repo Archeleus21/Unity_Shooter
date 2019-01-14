@@ -4,10 +4,9 @@ public class PlayerShooting : MonoBehaviour
 {
     public int damagePerShot = 20;  //bullet damage
     public float timeBetweenBullets = 0.15f;  //shooting time / attackspeed
-    public float timeBetweenSecondaryBullets = 1f;
     public float range = 100f;  //effective range
 
-    public GameObject grenadeBulletPrefab;
+    public GameObject bombPrefab;
 
     Ray shootRay = new Ray();  //raycast to find out what we hit
     RaycastHit shootHit;  //used to return what we hit
@@ -17,7 +16,6 @@ public class PlayerShooting : MonoBehaviour
     Light gunLight;  //bullet lights
 
     float timer;  //keey everythingin sync
-    float secondaryBulletTimer;
     float effectsDisplayTime = 0.2f;  //life time of particles/effects
     int shootableMask;  //only click on the floor
 
@@ -37,22 +35,22 @@ public class PlayerShooting : MonoBehaviour
     void Update ()
     {
         timer += Time.deltaTime;  //timer used for processes and control attack speed
-        secondaryBulletTimer += Time.deltaTime;
 
 		if(Input.GetButton ("Fire1") && timer >= timeBetweenBullets && Time.timeScale != 0)  //uses mouse left click to shoot
         {
             Shoot ();
         }
 
-        if (Input.GetButton("Fire2") && secondaryBulletTimer >= timeBetweenSecondaryBullets && Time.timeScale != 0)  //uses mouse left click to shoot
+        if(Input.GetButton("Fire2"))
         {
-            ShootSecondaryRound();
+            ShootBomb();
         }
 
         if (timer >= timeBetweenBullets * effectsDisplayTime)  //used to disaable effects
         {
             DisableEffects ();
         }
+
     }
 
     //disables effects
@@ -98,10 +96,10 @@ public class PlayerShooting : MonoBehaviour
             gunLine.SetPosition (1, shootRay.origin + shootRay.direction * range);
         }
     }
-    
-    void ShootSecondaryRound()
+
+    void ShootBomb()
     {
-        secondaryBulletTimer = 0f;
-        Instantiate(grenadeBulletPrefab, transform.position, transform.rotation);       
+        GameObject bombGO = Instantiate(bombPrefab, transform.position, transform.rotation);
     }
+
 }
