@@ -2,11 +2,11 @@
 
 public class PlayerShooting : MonoBehaviour
 {
+    [SerializeField] private Grenade grenadePrefab;
+
     public int damagePerShot = 20;  //bullet damage
     public float timeBetweenBullets = 0.15f;  //shooting time / attackspeed
     public float range = 100f;  //effective range
-
-    public GameObject bombPrefab;
 
     Ray shootRay = new Ray();  //raycast to find out what we hit
     RaycastHit shootHit;  //used to return what we hit
@@ -41,9 +41,9 @@ public class PlayerShooting : MonoBehaviour
             Shoot ();
         }
 
-        if(Input.GetButton("Fire2"))
+        if(Input.GetButtonDown("Fire2"))
         {
-            ShootBomb();
+            ThrowGrenade();
         }
 
         if (timer >= timeBetweenBullets * effectsDisplayTime)  //used to disaable effects
@@ -97,9 +97,8 @@ public class PlayerShooting : MonoBehaviour
         }
     }
 
-    void ShootBomb()
+    private void ThrowGrenade()
     {
-        GameObject bombGO = Instantiate(bombPrefab, transform.position, transform.rotation);
+        Instantiate(grenadePrefab, transform.position, transform.rotation);
     }
-
 }

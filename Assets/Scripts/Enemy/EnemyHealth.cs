@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour
 {
+    public static EnemyHealth instance = null;
+
     public int startingHealth = 100;  //enemy starting health
     public int currentHealth;  //stores current health
     public float sinkSpeed = 2.5f;  //used to get rid of enemy character
@@ -17,9 +19,23 @@ public class EnemyHealth : MonoBehaviour
     CapsuleCollider capsuleCollider;
 
     //true of false variables
-    bool isDead;
-    bool isSinking;
+    private bool isInGrenadeRange = false;
+    private bool isDead;
+    private bool isSinking;
 
+    //-------------------------------------------------
+    //-------------------------------------------------
+    public bool IsInGrenadeRange
+    {
+        get
+        {
+            return isInGrenadeRange;
+        }
+        set
+        {
+            isInGrenadeRange = !isInGrenadeRange;
+        }
+    }
 
     void Awake ()
     {
